@@ -19,3 +19,8 @@ func (c *Config) Populate() error {
 	}
 	return nil
 }
+
+// Override ...
+func (c *Config) Override(base *Config) error {
+	return nil
+}
