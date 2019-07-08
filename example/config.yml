@@ -1,0 +1,8 @@
+image: ./base.jpeg
+
+labels:
+  - text: FOO BAR
+    position:
+      x: 0.2
+      y: 0.3
+    size: 2
