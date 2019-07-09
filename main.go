@@ -1,10 +1,13 @@
 package main
 
 import (
+	_ "image/jpeg"
+
 	"flag"
-	"fmt"
+	"io/ioutil"
 	"log"
 	"os"
+	"path/filepath"
 
 	"github.com/otiai10/flmake/flmake"
 	"gopkg.in/yaml.v2"
@@ -20,17 +23,37 @@ func init() {
 }
 
 func main() {
-	fmt.Println(configpath)
+	if err := run(); err != nil {
+		log.Fatalln(err)
+	}
+}
+
+func run() error {
 	c, err := os.Open(configpath)
 	if err != nil {
-		log.Fatalln(err)
+		return err
 	}
 	defer c.Close()
 
-	config := new(flmake.Config)
-	if err := yaml.NewDecoder(c).Decode(config); err != nil {
-		log.Fatalln(err)
+	abspath, _ := filepath.Abs(c.Name())
+	config := &flmake.Config{Name: abspath}
+
+	b, err := ioutil.ReadAll(c)
+	if err != nil {
+		return err
+	}
+	if err := yaml.Unmarshal(b, config); err != nil {
+		return err
 	}
 
-	fmt.Printf("%+v\n", config)
+	if err := config.Populate(); err != nil {
+		return err
+	}
+
+	builder := &flmake.Builder{Config: config}
+	if err := builder.Build(); err != nil {
+		return err
+	}
+
+	return nil
 }

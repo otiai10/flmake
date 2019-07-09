@@ -1,12 +1,16 @@
 package flmake
 
-import "fmt"
+import (
+	"fmt"
+	"path/filepath"
+)
 
 // Config ...
 type Config struct {
-	Image  Image   `yaml:"image"`
-	Images []Image `yaml:"images"`
-	Labels []Label `yaml:"labels"`
+	Name     string
+	Image    Image    `yaml:"image"`
+	Images   []Image  `yaml:"images"`
+	Elements Elements `yaml:"elements"`
 }
 
 // Populate ...
@@ -16,6 +20,10 @@ func (c *Config) Populate() error {
 			return fmt.Errorf("`image` or `images` fields are required to make a flyer")
 		}
 		c.Images = []Image{c.Image}
+	}
+	dir := filepath.Dir(c.Name)
+	for i, img := range c.Images {
+		c.Images[i] = Image(filepath.Join(dir, string(img)))
 	}
 	return nil
 }

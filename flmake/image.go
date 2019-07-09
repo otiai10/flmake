@@ -1,11 +1,14 @@
 package flmake
 
-import "io"
+import (
+	"io"
+	"os"
+)
 
 // Image ...
 type Image string
 
 // Open ...
 func (img Image) Open() (io.ReadCloser, error) {
-	return nil, nil
+	return os.Open(string(img))
 }
